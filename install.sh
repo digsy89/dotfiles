@@ -42,6 +42,22 @@ else
   info "tokyonight.nvim already installed, skipping"
 fi
 
+# --- Homebrew ---
+if ! command -v brew &>/dev/null; then
+  info "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+else
+  info "Homebrew already installed, skipping"
+fi
+
+# --- tmux binary ---
+if ! command -v tmux &>/dev/null; then
+  info "Installing tmux..."
+  brew install tmux
+else
+  info "tmux already installed, skipping"
+fi
+
 # --- tmux (gpakosz/.tmux) ---
 if [ ! -d "$HOME/.tmux" ]; then
   info "Cloning gpakosz/.tmux..."
