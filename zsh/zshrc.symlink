@@ -131,7 +131,7 @@ unset __conda_setup
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # >>> p2p shell completion >>>
-source /Users/digsy/.zsh/completions/_p2p
+[[ -f ~/.zsh/completions/_p2p ]] && source ~/.zsh/completions/_p2p
 # <<< p2p shell completion <<<
 
 # The next line updates PATH for the Google Cloud SDK.
@@ -142,4 +142,4 @@ if [ -f '/Users/digsy/workspace/google-cloud-sdk/completion.zsh.inc' ]; then . '
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home
 
-. "$HOME/.local/bin/env"
+[[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
