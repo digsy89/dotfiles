@@ -32,6 +32,17 @@ backup_and_link "$DOTFILES_DIR/p10k.zsh"     "$HOME/.p10k.zsh"
 # --- Vim ---
 backup_and_link "$DOTFILES_DIR/vimrc"        "$HOME/.vimrc"
 
+# --- Neovim ---
+backup_and_link "$DOTFILES_DIR/config/nvim/init.lua" "$HOME/.config/nvim/init.lua"
+
+TOKYONIGHT_DIR="$HOME/.local/share/nvim/site/pack/themes/start/tokyonight.nvim"
+if [ ! -d "$TOKYONIGHT_DIR" ]; then
+  info "Installing tokyonight.nvim..."
+  git clone --depth=1 https://github.com/folke/tokyonight.nvim "$TOKYONIGHT_DIR"
+else
+  info "tokyonight.nvim already installed, skipping"
+fi
+
 # --- tmux ---
 backup_and_link "$DOTFILES_DIR/tmux.conf.local" "$HOME/.tmux.conf.local"
 
