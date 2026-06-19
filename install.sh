@@ -20,7 +20,7 @@ link() {
   fi
 
   mkdir -p "$(dirname "$dst")"
-  ln -sf "$src" "$dst"
+  ln -sfn "$src" "$dst"
   info "Linked $dst"
 }
 
