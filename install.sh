@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Colors
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
@@ -11,30 +10,30 @@ NC='\033[0m'
 info()    { echo -e "${GREEN}[dotfiles]${NC} $1"; }
 warning() { echo -e "${YELLOW}[dotfiles]${NC} $1"; }
 
-backup_and_link() {
+link() {
   local src="$1"
   local dst="$2"
 
   if [ -e "$dst" ] && [ ! -L "$dst" ]; then
-    warning "Backing up existing $dst → $dst.bak"
+    warning "Backing up $dst → $dst.bak"
     mv "$dst" "$dst.bak"
   fi
 
   mkdir -p "$(dirname "$dst")"
   ln -sf "$src" "$dst"
-  info "Linked $dst → $src"
+  info "Linked $dst"
 }
 
-# --- Shell ---
-backup_and_link "$DOTFILES_DIR/zshrc"        "$HOME/.zshrc"
-backup_and_link "$DOTFILES_DIR/p10k.zsh"     "$HOME/.p10k.zsh"
+# --- *.symlink files → $HOME/.<name> ---
+while IFS= read -r -d '' src; do
+  filename="$(basename "$src" .symlink)"
+  link "$src" "$HOME/.$filename"
+done < <(find "$DOTFILES" -name "*.symlink" -not -path "*/.git/*" -print0)
 
-# --- Vim ---
-backup_and_link "$DOTFILES_DIR/vimrc"        "$HOME/.vimrc"
+# --- Neovim: link entire nvim/ dir to ~/.config/nvim ---
+link "$DOTFILES/nvim" "$HOME/.config/nvim"
 
-# --- Neovim ---
-backup_and_link "$DOTFILES_DIR/config/nvim/init.lua" "$HOME/.config/nvim/init.lua"
-
+# --- tokyonight.nvim ---
 TOKYONIGHT_DIR="$HOME/.local/share/nvim/site/pack/themes/start/tokyonight.nvim"
 if [ ! -d "$TOKYONIGHT_DIR" ]; then
   info "Installing tokyonight.nvim..."
@@ -43,9 +42,7 @@ else
   info "tokyonight.nvim already installed, skipping"
 fi
 
-# --- tmux ---
-backup_and_link "$DOTFILES_DIR/tmux.conf.local" "$HOME/.tmux.conf.local"
-
+# --- tmux (gpakosz/.tmux) ---
 if [ ! -d "$HOME/.tmux" ]; then
   info "Cloning gpakosz/.tmux..."
   git clone https://github.com/gpakosz/.tmux.git "$HOME/.tmux"
