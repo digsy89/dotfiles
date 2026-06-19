@@ -55,9 +55,6 @@ else
   info "~/.tmux already exists, skipping clone"
 fi
 
-# --- Fish ---
-backup_and_link "$DOTFILES_DIR/config/fish/config.fish" "$HOME/.config/fish/config.fish"
-
 # --- Oh My Zsh ---
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   info "Installing Oh My Zsh..."
