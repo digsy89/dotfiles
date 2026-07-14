@@ -13,3 +13,5 @@ vim.opt.hlsearch = true
 --   },
 -- })
 vim.cmd("colorscheme tokyonight")
+
+require("gitsigns").setup()

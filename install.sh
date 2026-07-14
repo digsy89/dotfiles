@@ -42,6 +42,15 @@ else
   info "tokyonight.nvim already installed, skipping"
 fi
 
+# --- gitsigns.nvim ---
+GITSIGNS_DIR="$HOME/.local/share/nvim/site/pack/plugins/start/gitsigns.nvim"
+if [ ! -d "$GITSIGNS_DIR" ]; then
+  info "Installing gitsigns.nvim..."
+  git clone --depth=1 https://github.com/lewis6991/gitsigns.nvim "$GITSIGNS_DIR"
+else
+  info "gitsigns.nvim already installed, skipping"
+fi
+
 # --- Homebrew ---
 if ! command -v brew &>/dev/null; then
   info "Installing Homebrew..."
