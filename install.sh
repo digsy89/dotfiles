@@ -33,22 +33,14 @@ done < <(find "$DOTFILES" -name "*.symlink" -not -path "*/.git/*" -print0)
 # --- Neovim: link entire nvim/ dir to ~/.config/nvim ---
 link "$DOTFILES/nvim" "$HOME/.config/nvim"
 
-# --- tokyonight.nvim ---
-TOKYONIGHT_DIR="$HOME/.local/share/nvim/site/pack/themes/start/tokyonight.nvim"
-if [ ! -d "$TOKYONIGHT_DIR" ]; then
-  info "Installing tokyonight.nvim..."
-  git clone --depth=1 https://github.com/folke/tokyonight.nvim "$TOKYONIGHT_DIR"
+# --- Neovim plugins ---
+# lazy.nvim manages plugins; it bootstraps itself and installs the spec from
+# nvim/init.lua on first launch. Sync now so a fresh machine is ready offline.
+if command -v nvim &>/dev/null; then
+  info "Syncing Neovim plugins via lazy.nvim..."
+  nvim --headless "+Lazy! sync" +qa
 else
-  info "tokyonight.nvim already installed, skipping"
-fi
-
-# --- gitsigns.nvim ---
-GITSIGNS_DIR="$HOME/.local/share/nvim/site/pack/plugins/start/gitsigns.nvim"
-if [ ! -d "$GITSIGNS_DIR" ]; then
-  info "Installing gitsigns.nvim..."
-  git clone --depth=1 https://github.com/lewis6991/gitsigns.nvim "$GITSIGNS_DIR"
-else
-  info "gitsigns.nvim already installed, skipping"
+  warning "nvim not found; plugins will install on first launch"
 fi
 
 # --- Homebrew ---
