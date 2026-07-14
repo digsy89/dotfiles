@@ -6,7 +6,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # True color support
 export COLORTERM=truecolor
@@ -89,6 +89,12 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git conda)
 
+# Disable oh-my-zsh's auto-update check (no background git fetch on startup)
+zstyle ':omz:update' mode disabled
+
+# Skip compinit's insecure-directory audit on this single-user machine
+ZSH_DISABLE_COMPFIX="true"
+
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -122,20 +128,14 @@ source $ZSH/oh-my-zsh.sh
 alias l='ls -lh'
 alias ll='ls -lah'
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/digsy/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/digsy/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/digsy/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/digsy/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
+# conda (initialize only if an install actually exists on this machine)
+for _conda_base in "$HOME/anaconda3" "$HOME/miniconda3" "$HOME/miniforge3" "/opt/homebrew/anaconda3"; do
+  if [[ -f "$_conda_base/etc/profile.d/conda.sh" ]]; then
+    source "$_conda_base/etc/profile.d/conda.sh"
+    break
+  fi
+done
+unset _conda_base
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -144,12 +144,22 @@ unset __conda_setup
 [[ -f ~/.zsh/completions/_p2p ]] && source ~/.zsh/completions/_p2p
 # <<< p2p shell completion <<<
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/digsy/workspace/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/digsy/workspace/google-cloud-sdk/path.zsh.inc'; fi
+# Google Cloud SDK — intentionally NOT loaded.
+# The install at ~/workspace/google-cloud-sdk is stale: it uses the `imp`
+# module, removed in Python 3.12, so `gcloud` crashes on every invocation
+# (including p10k's gcloud prompt segment). To use gcloud again, reinstall a
+# current SDK, then uncomment the block below (pointing at the new path):
+#   for _gcloud_base in "$HOME/google-cloud-sdk" "$HOME/workspace/google-cloud-sdk"; do
+#     if [[ -f "$_gcloud_base/path.zsh.inc" ]]; then
+#       source "$_gcloud_base/path.zsh.inc"
+#       [[ -f "$_gcloud_base/completion.zsh.inc" ]] && source "$_gcloud_base/completion.zsh.inc"
+#       break
+#     fi
+#   done
+#   unset _gcloud_base
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/digsy/workspace/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/digsy/workspace/google-cloud-sdk/completion.zsh.inc'; fi
-
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home
+# Java (only if the JDK is present)
+[[ -d /Library/Java/JavaVirtualMachines/temurin-25.jdk ]] && \
+  export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home
 
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
